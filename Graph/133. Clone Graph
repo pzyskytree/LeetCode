@@ -1,0 +1,190 @@
+## 133. Clone Graph
+
+Medium
+
+Given the head of a graph, return a deep copy (clone) of the graph. Each node in the graph contains a `label` (`int`) and a list (`List[UndirectedGraphNode]`) of its `neighbors`. There is an edge between the given node and each of the nodes in its neighbors.
+
+OJ's undirected graph serialization (so you can understand error output):
+
+Nodes are labeled uniquely.
+
+We use
+
+ 
+
+```
+#
+```
+
+ 
+
+as a separator for each node, and
+
+ 
+
+```
+,
+```
+
+ 
+
+as a separator for node label and each neighbor of the node.
+
+ 
+
+As an example, consider the serialized graph `{0,1,2#1,2#2,2}`.
+
+The graph has a total of three nodes, and therefore contains three parts as separated by `#`.
+
+1. First node is labeled as `0`. Connect node `0` to both nodes `1` and `2`.
+2. Second node is labeled as `1`. Connect node `1` to node `2`.
+3. Third node is labeled as `2`. Connect node `2` to node `2` (itself), thus forming a self-cycle.
+
+ 
+
+Visually, the graph looks like the following:
+
+```
+       1
+      / \
+     /   \
+    0 --- 2
+         / \
+         \_/
+```
+
+**Note**: The information about the tree serialization is only meant so that you can understand error output if you get a wrong answer. You don't need to understand the serialization to solve the problem.
+
+**Solution1:**
+
+```java
+//DFS
+//Time : O(M + N)
+/**
+ * Definition for undirected graph.
+ * class UndirectedGraphNode {
+ *     int label;
+ *     List<UndirectedGraphNode> neighbors;
+ *     UndirectedGraphNode(int x) { label = x; neighbors = new ArrayList<UndirectedGraphNode>(); }
+ * };
+ */
+public class Solution {
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        if (node == null)
+            return null;
+        Map<UndirectedGraphNode, UndirectedGraphNode> map = new HashMap<>();
+        dfs(node, map);
+        return map.get(node);
+    }
+    
+    public void dfs(UndirectedGraphNode node, Map<UndirectedGraphNode, UndirectedGraphNode> map){
+        UndirectedGraphNode cloneN = new UndirectedGraphNode(node.label);
+        map.put(node, cloneN);
+        for (UndirectedGraphNode neighbor : node.neighbors){
+            if (!map.containsKey(neighbor)){
+                dfs(neighbor, map);
+            }
+            cloneN.neighbors.add(map.get(neighbor));
+        }
+    }
+}
+
+```
+
+```python
+# Definition for a undirected graph node
+# class UndirectedGraphNode:
+#     def __init__(self, x):
+#         self.label = x
+#         self.neighbors = []
+
+class Solution:
+    # @param node, a undirected graph node
+    # @return a undirected graph node
+    def cloneGraph(self, node):
+        if node is None:
+            return None
+        node_map = {}
+        node_map[node] = UndirectedGraphNode(node.label)
+        self.dfs(node, node_map)
+        return node_map[node]
+    
+    def dfs(self, node, node_map):
+        clone_node = node_map[node]
+        for neighbor in node.neighbors:
+            if neighbor not in node_map:
+                node_map[neighbor] = UndirectedGraphNode(neighbor.label)
+                self.dfs(neighbor, node_map)
+            clone_node.neighbors.append(node_map[neighbor])
+            
+        
+```
+
+**Solution2:**
+
+```java
+//BFS
+// Time: O(N + M)
+/**
+ * Definition for undirected graph.
+ * class UndirectedGraphNode {
+ *     int label;
+ *     List<UndirectedGraphNode> neighbors;
+ *     UndirectedGraphNode(int x) { label = x; neighbors = new ArrayList<UndirectedGraphNode>(); }
+ * };
+ */
+public class Solution {
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        if (node == null)
+            return null;
+        Queue<UndirectedGraphNode> queue = new LinkedList<>();
+        Map<UndirectedGraphNode, UndirectedGraphNode> map = new HashMap<>();
+        queue.offer(node);
+        map.put(node, new UndirectedGraphNode(node.label));
+        while (!queue.isEmpty()){
+            UndirectedGraphNode n = queue.poll();
+            UndirectedGraphNode nClone = map.get(n);
+            for (UndirectedGraphNode neighbor : n.neighbors){
+                if (!map.containsKey(neighbor)){
+                    map.put(neighbor, new UndirectedGraphNode(neighbor.label));
+                    queue.offer(neighbor);
+                }
+                nClone.neighbors.add(map.get(neighbor));
+            }
+        }
+        return map.get(node);
+    }
+}
+```
+
+```python
+from collections import deque
+# Definition for a undirected graph node
+# class UndirectedGraphNode:
+#     def __init__(self, x):
+#         self.label = x
+#         self.neighbors = []
+
+class Solution:
+    # @param node, a undirected graph node
+    # @return a undirected graph node
+    def cloneGraph(self, node):
+        if node is None:
+            return None
+        node_map = {}
+        node_map[node] = UndirectedGraphNode(node.label)
+        queue = deque()
+        queue.append(node)
+        while len(queue) > 0:
+            n = queue.popleft()
+            for neighbor in n.neighbors:
+                if neighbor not in node_map:
+                    node_map[neighbor] = UndirectedGraphNode(neighbor.label)
+                    queue.append(neighbor)
+                node_map[n].neighbors.append(node_map[neighbor])
+        return node_map[node]
+        
+            
+        
+```
+
