@@ -1,0 +1,90 @@
+## 43. Multiply Strings
+
+Medium
+
+Given two non-negative integers `num1` and `num2` represented as strings, return the product of `num1` and `num2`, also represented as a string.
+
+**Example 1:**
+
+```
+Input: num1 = "2", num2 = "3"
+Output: "6"
+```
+
+**Example 2:**
+
+```
+Input: num1 = "123", num2 = "456"
+Output: "56088"
+```
+
+**Note:**
+
+1. The length of both `num1` and `num2` is < 110.
+2. Both `num1` and `num2` contain only digits `0-9`.
+3. Both `num1` and `num2` do not contain any leading zero, except the number 0 itself.
+4. You **must not use any built-in BigInteger library** or **convert the inputs to integer** directly.
+
+**Solution1:**
+
+```java
+//Based on the rule of multiplication
+//Time O(M * N)
+class Solution {
+    public String multiply(String nums1, String nums2) {
+        StringBuilder result = new StringBuilder();
+        if (nums1 == null || nums1.length() == 0 || nums2 == null || nums2.length() == 0)
+            return result.toString();
+        if (nums1.equals("0") || nums2.equals("0"))
+            return "0";
+        int m = nums1.length(), n = nums2.length();
+        for (int i = m - 1; i >= 0; i--){
+            int carry = 0, len = result.length(), k = m - 1 - i;
+            for (int j = n - 1; j >= 0 || carry > 0; j--){
+                if (j >= 0)
+                    carry += (nums1.charAt(i) - '0') * (nums2.charAt(j) - '0');
+                if (k < len){
+                    carry += result.charAt(k) - '0';
+                    result.setCharAt(k++, (char)(carry % 10 + '0'));
+                }else
+                    result.append((char)(carry % 10 + '0'));
+                carry /= 10;
+            }
+        }
+        return result.reverse().toString();
+    }
+}
+```
+
+```python
+class Solution(object):
+    def multiply(self, num1, num2):
+        """
+        :type num1: str
+        :type num2: str
+        :rtype: str
+        """
+        if num1 is None or num2 is None or len(num1) == 0 or len(num2) == 0:
+            return ""
+        if num1 == "0" or num2 == "0":
+            return "0"
+        result, m, n = [], len(num1), len(num2)
+        for i in range(m - 1, -1, -1):
+            carry, length, k, j = 0, len(result), m - 1 - i, n - 1
+            while j >= 0 or carry > 0:
+                if j >= 0:
+                    carry += int(num1[i]) * int(num2[j])
+                    j -= 1
+                if k < length:
+                    carry += int(result[k])
+                    result[k] = str(carry % 10)
+                    k += 1
+                else:
+                    result.append(str(carry % 10))
+                carry /= 10
+        return "".join(result[::-1])
+        
+        
+        
+```
+
